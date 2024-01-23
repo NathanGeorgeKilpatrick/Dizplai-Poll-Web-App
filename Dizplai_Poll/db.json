@@ -1,0 +1,63 @@
+[
+{
+    "pollId": 1,
+    "pollName": "Premier League Winner",
+    "question": "Who will win the Premier League?",
+    "options": [
+                    {
+                        "optionId": 11,
+                        "optionText": "Manchester City"
+                    },
+                    {
+                        "optionId": 22,
+                        "optionText": "Arsenal"
+                    },
+                    {
+                        "optionId": 33,
+                        "optionText": "Liverpool"
+                    }
+                ]
+},
+{
+    "pollId": 2,
+    "pollName": "Best Footballer",
+    "question": "Who is the best Football player in the world?",
+    "options": [
+                    {
+                        "optionId": 1,
+                        "optionText": "Ronaldo"
+                    },
+                    {
+                        "optionId": 2,
+                        "optionText": "Messi"
+                    }
+                ]
+},
+{
+    "pollId": 3,
+    "pollName": "Best Stadium",
+    "question": "What is the best stadium in the world?",
+    "options": [
+                    {
+                        "optionId": 1,
+                        "optionText": "Estadio Santiago"
+                    },
+                    {
+                        "optionId": 2,
+                        "optionText": "Maracana"
+                    },
+                    {
+                        "optionId": 3,
+                        "optionText": "Signal Iduna Park"
+                    },
+                    {
+                        "optionId": 4,
+                        "optionText": "La Bombonera"
+                    },
+                    {
+                        "optionId": 5,
+                        "optionText": "San Siro"
+                    }
+                ]
+}
+]

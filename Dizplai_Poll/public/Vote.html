@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="Style.css">
+    <title>Dizplai Options</title>
+</head>
+<body>
+
+    <header>
+        <div class="continer">
+            <div class="logo">
+                <img src="images/logo.png" alt="Displai Logo">
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="question">
+            <p>Thank you for your response!</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <ul class="voteOptions"></ul>
+    </div>
+
+
+</body>
+<script>
+    const activeOption = localStorage.active
+    console.log(activeOption)
+
+    //Get id from url path
+    const id = window.location.pathname.replaceAll('/', '')
+    console.log(`ID for this page is: ${id}`)
+
+    //Variables for creating list and inputting data from db
+    const optionsList = document.querySelector('ul')
+    let optionsFromServer = []
+    let orderedVal = []
+
+    //Checks if ID in Url matches id in database if not redirects user to another page.
+    async function voteOnLoad() {
+
+        const res = await fetch('/data/' + id)
+        const { data } = await res.json()
+
+        console.log("This is the poll data:")
+        console.log(data)
+        console.log("____________________________________________________________________")
+
+        //Getting voting info from votingdb.json
+        const vres = await fetch('/voting/' + id)
+        const { voting } = await vres.json()
+
+        console.log("This is the voting data:")
+        console.log(voting[id].options)
+        console.log("____________________________________________________________________")
+
+        optionsFromServer = voting[id].options
+        
+        //Making sure that data is collected and used using the poll Id
+        var selectedPollData = {}
+        console.log(selectedPollData)
+        for(var i = 0; i < data.length; i++)
+        {
+            if (data[i].pollId == id) {
+                selectedPollData = data[i]
+            }
+        }
+        console.log(selectedPollData)
+
+        //Calculating the total number of votes made
+        var totalNumberOfVotes = 0
+        Object.keys(selectedPollData.options).forEach((val, index) => {
+            totalNumberOfVotes += voting[id].options[selectedPollData.options[index].optionId]
+        })
+        console.log(`The total number of votes is: ${totalNumberOfVotes}`)
+
+        // Ordering the votes
+        Object.keys(selectedPollData.options).forEach((val, index) => {
+            orderedVal.push(voting[id].options[selectedPollData.options[index].optionId])          
+            console.log(`Val: ${voting[id].options[selectedPollData.options[index].optionId]}`)
+        })
+        orderedVal.sort((a, b) => {
+            if (a > b) {
+                return -1;
+            }
+            if (a < b) {
+                return 1;
+            }
+            return 0;
+        })
+        console.log(`Beggest to smallest: ${orderedVal}`)
+
+
+        //rendering the options
+        var i = 0
+        let newInnerListHTML = ''
+        Object.keys(selectedPollData.options).forEach((optionText, index) => {
+            Object.keys(selectedPollData.options).forEach((optionText, index) => {
+                if (orderedVal[i] == voting[id].options[selectedPollData.options[index].optionId])
+                {
+                    newInnerListHTML += `<li id=${selectedPollData.options[index].optionId} class=''><div id='percentageBar${selectedPollData.options[index].optionId}' class='percentageBar'> </div>${selectedPollData.options[index].optionText} </li><percent class='percentage'>${Math.round(((voting[id].options[selectedPollData.options[index].optionId] / totalNumberOfVotes) * 100)*100)/100}%</percent> `
+                    console.log(selectedPollData.options[index].optionText)
+                    i++
+                }
+            })
+        })
+        optionsList.innerHTML = newInnerListHTML    
+        const optionsLi = document.querySelectorAll('li')
+
+        //Rendering visuals for votes
+        optionsLi.forEach(val => {
+            if (totalNumberOfVotes !== 0) {
+                const voteData = voting[id].options[val.id]
+                const bgWidth = voteData === 0? '5%' : `${(voteData / totalNumberOfVotes) * 100}%`
+                document.getElementById(`percentageBar${val.id}`).style.width = bgWidth
+            }
+        })
+    }
+    voteOnLoad()
+
+
+</script>
+</html>

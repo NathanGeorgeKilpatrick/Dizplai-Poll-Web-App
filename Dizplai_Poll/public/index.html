@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="Style.css">
+    <title></title>
+</head>
+<body>
+
+    <header>
+        <div class="continer">
+            <div class="logo">
+                <img src="images/logo.png" alt="Displai Logo">
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="question">
+            <p></p>
+        </div>
+    </div>
+
+    <form action="#" onsubmit="functSubmit(this)">
+        <div class="container">
+            <ul class="options"></ul>
+        </div>
+
+        <div class="container">
+            <div class="submitbutton">
+                <button type="submit" id="submit">SUBMIT</button>
+            </div>
+        </div>
+    </form>
+
+</body>
+<script>
+    //Holds what option is currently selected
+    var active = ''
+
+    //Variables for creating list and inputting data from db
+    const question = document.querySelector('.question > p')
+    const optionsList = document.querySelector('ul')
+    let optionsFromServer = []
+
+    let AllPOLLIDS = []
+    let newALLPOLLIDS = []
+    let VERIFIEDPOLLIDS = []
+
+    //Checks if ID in Url matches id in database if not redirects user to another page.
+    async function onLoad() {
+        localStorage.active = null
+        
+        const Res = await fetch('/pollIds')
+        const { pollIds } = await Res.json()
+    
+        //Getting data from the db.json file
+        const res = await fetch('/data/' + pollIds)
+        const { data } = await res.json()  
+
+        console.log("This is the poll data:")
+        console.log(data[2].pollName)
+        console.log("____________________________________________________________________")
+
+        //Getting voting info from votingdb.json
+        const vres = await fetch('/voting/' + pollIds)
+        const { voting } = await vres.json()
+
+        console.log("This is the voting data:")
+        console.log(voting)
+        console.log("____________________________________________________________________")
+
+        //Adding all PollId to array
+        Object.keys(data).forEach((val, index) => {
+            AllPOLLIDS.push(data[index].pollId)
+        })
+        
+        //Verify db.json file getting rid of both instances if id is repeated.
+        var newALLPOLLIDS = AllPOLLIDS
+        for (var h = 0; h < AllPOLLIDS.length; h++) {
+            var curItem = AllPOLLIDS[h];
+            var foundCount = 0;
+            // Search array for repeating items.
+            for (var i = 0; i < AllPOLLIDS.length; i++) {
+                if (AllPOLLIDS[i] == AllPOLLIDS[h]) {
+                    foundCount++
+                }
+            }
+            if (foundCount > 1) {
+                //Remove repeated item from new array
+                for (var j = 0; j < newALLPOLLIDS.length; j++) {
+                    if (newALLPOLLIDS[j] == curItem) {
+                        newALLPOLLIDS.splice(j, 1);
+                        j--;
+                    }
+                }
+            }
+        }
+        console.log(`Duplicate PollId Verified: ${newALLPOLLIDS}`)
+
+        //Data Verification for Voing db
+        Object.keys(data).forEach((val, index) => {
+            var numberOfValidOptionIds = 0
+            var numberOfTotalOptions = 0
+            let NOREPEATINGOPTIONIDS = []
+
+            if (newALLPOLLIDS.includes(data[index].pollId))
+            {
+                //Checking that there is a corrisponding object to pollId in db.json
+                if (typeof voting[data[index].pollId] === 'object')
+                {
+                    Object.keys(data[index].options).forEach((op) => {
+                        //Checks that options in votingdb.json corrisponds with db.json 
+                        if (typeof voting[data[index].pollId].options[data[index].options[op].optionId] == "number" ) {  
+                            if (!NOREPEATINGOPTIONIDS.includes(data[index].options[op].optionId))
+                            {
+                                //Adds to total of valid options
+                                numberOfValidOptionIds++
+                                NOREPEATINGOPTIONIDS.push(data[index].options[op].optionId)
+                            }
+                        }
+                        //Adds one to total number of options avaliable
+                        numberOfTotalOptions++
+                    })
+                    //If all total options are valid add pollId to array
+                    if (numberOfValidOptionIds == numberOfTotalOptions)
+                    {
+                        if (numberOfTotalOptions >= 2 && numberOfTotalOptions <= 5)
+                        {
+                            VERIFIEDPOLLIDS.push(data[index].pollId)
+                        }
+                    }
+                }
+            }            
+        })
+        console.log(`Options verified Polls: ${VERIFIEDPOLLIDS}`)
+
+        
+        
+        //Randomly selects a PollId from ones that pass verification
+        const id = VERIFIEDPOLLIDS[Math.floor(Math.random() * VERIFIEDPOLLIDS.length)]
+        localStorage.identification = id
+        console.log(`Poll selected: ${id}`)
+
+
+        optionsFromServer = voting[id].options
+
+
+        var selectedPollData = {}
+        for(var i = 0; i < data.length; i++)
+        {
+            if (data[i].pollId == id) {
+                selectedPollData = data[i]
+            }
+        }
+        console.log(selectedPollData)
+
+        document.title = `Dizpali Poll - ${selectedPollData.pollName}`
+
+        //If question doesn't have ? add one
+        question.innerText = selectedPollData.question + (selectedPollData.question.includes('?') ? '' : '?')
+
+        //rendering the options
+        let newInnerListHTML = ''
+        Object.keys(selectedPollData.options).forEach((optionText, index) => {
+            newInnerListHTML += `<li id=${selectedPollData.options[index].optionId} class='' onclick='selectOption(${selectedPollData.options[index].optionId})'';> ${selectedPollData.options[index].optionText} </li>`
+            console.log(selectedPollData.options[index].optionText)
+        })
+        optionsList.innerHTML = newInnerListHTML
+
+        const optionsLi = document.querySelectorAll('li')
+    }
+    onLoad()
+
+    function selectOption(selected) {
+        if (active == '')
+        {
+            console.log(`Active was null: ${active}`)
+            document.getElementById(selected).classList.add('selected')
+            active = selected
+            console.log(`Active number changed: ${active}`)
+        }
+        else if (active !== selected) {
+            console.log(`Active not equal new number: ${active}`)
+            console.log(`Current selected: ${selected}`)
+            document.getElementById(active).classList.remove('selected')
+            console.log('Current active removed')
+            document.getElementById(selected).classList.add('selected')
+            console.log('New active added')
+            active = selected
+            
+            console.log(`Active number changed: ${active}`)
+        }
+
+    }
+
+    // Code for submitting selection
+    const submitBtn = document.getElementById('submit')
+    async function functSubmit(e) {
+        const id = localStorage.identification
+        if (active == '')
+        {
+            console.log('Error must select a value')
+            return
+        }
+        if(typeof(Storage)!=="undefined") {
+            localStorage.active = active
+            console.log(`Option sent to votingdb.json is: ${active}`)
+        } else {
+            console.log("Sorry, browers does not support web storage...")
+        }
+
+        //Send result to server
+        const res = await fetch('/vote', {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                id,
+                vote: active
+            })
+        })
+        window.location.href = `/${id}`
+    }
+
+</script>
+</html>

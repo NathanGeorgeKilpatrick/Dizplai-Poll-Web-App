@@ -1,0 +1,214 @@
+@font-face {
+    font-family: Outfit; 
+    src: url('/fonts/Outfit-VariableFont_wght.woff2') format('woff2-variations');
+    font-weight: 100 900;
+}
+
+
+body {
+    padding: 0;
+    margin: 0;
+    height: 100vh;
+    font-family: Outfit, sans-serif;
+    font-variation-settings: "wght" 900;
+    box-sizing: border-box;
+    background-image: url("images/background.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-color: #996bf9;
+}
+
+.container{
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+button {
+    margin: 0;
+    padding: 0;
+    font-family: Outfit, sans-serif;
+}
+
+.logo {
+    margin: 0;
+}
+
+.logo img {
+    display: block;
+    width: min(25%, 300px);
+    margin-top: 1%;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+}
+
+.question {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+.question p {
+    margin: 32px 0;
+    padding: 0;
+    font-size: max(20%, 50px);
+    font-variation-settings: "wght" 800;
+    color: white;
+    text-align: center;
+    user-select: none;
+    text-transform: uppercase;
+}
+
+.selected {
+    color: black;
+    background-color: #E6E6FA !important;
+}
+
+.options {
+    margin: 0;
+    padding: 0;
+    gap: 50px;
+    text-align: center;
+    color: white;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.options li {
+    margin: 0;
+    padding: 20px 0;
+    font-size: max(25%, 50px);
+    text-transform: capitalize;
+    list-style: none;
+    user-select: none;
+    cursor: pointer;
+    font-variation-settings: "wght" 400;
+    background: rgba(255, 254, 254, 20%);
+    border: 2px solid #8C8C8C;
+    border-radius: 10px;
+}
+
+.options li:hover {
+    color: #000;
+    background-color: rgb(222 202 226);
+    border-left: 1px solid greenyellow;
+}
+
+.submitbutton {
+    margin: 40px 0 0;
+    padding: 0;
+    width: 100%;
+}
+
+.submitbutton button {
+    margin:0;
+    padding: 0;
+    font-variation-settings: "wght" 400;
+    width: 100%;
+    height: 100px;
+    font-size: max(25%, 50px);
+    border-radius: 10px;
+    border: 2px solid #8C8C8C;
+    background-color: #FFF;
+    color:  #7e58d1;
+    box-shadow: none;
+}
+
+.submitbutton button:hover {
+    background-color:  #e6e5e5;
+    color: #000;
+    transform: scale(1.04);
+    transition: transform 220ms ease-in-out;
+}
+
+
+/* Vote HTML Page */
+.voteOptions {
+    margin: 0;
+    padding: 0;
+    gap: 40px;
+    width: 80%;
+    text-align: center;
+    color: white;
+    display: flex;
+    flex-direction: column;
+}
+
+.voteOptions li {
+    margin: 0;
+    padding: 20px 0;
+    height: 60px;
+    font-size: max(25%, 50px);
+    text-transform: capitalize;
+    list-style: none;
+    user-select: none;
+    position: relative;
+    font-variation-settings: "wght" 400;
+    background: rgba(255, 254, 254, 25%);
+    border: 2px solid #8C8C8C;
+    border-radius: 10px;
+    clear: both;
+    overflow: hidden;
+}
+
+.voteOptions, .percentage {
+    display: inline-block;
+}
+
+.percentage {
+    margin: 0;
+    padding: 0;
+    float: right;
+    position: relative;
+    bottom: calc(4rem);
+    right: 10px;
+    font-variation-settings: "wght" 400;
+    font-size: 30px;
+    color: #FFF;
+}
+
+.percentageBar {
+    z-index: -1;
+    position: absolute;
+    margin: 0;
+    bottom: 0px;
+    padding: 50px 0 ;
+    background: #996BF9;
+    border-radius: 4px;
+}
+
+
+
+
+@media  (width <= 480px ) {
+    .body {
+        overflow: hidden;
+    }
+    .logo img{
+        width: 200px;
+    }
+    .question p {
+        font-size: 40px;
+    }
+    .options {
+        gap: 20px;
+    }
+    .options li, .voteOptions li, .submitbutton button {
+        font-size: 40px;
+    }
+}
+@media (width <= 768px) {
+    .options, .submitbutton {
+        width: 80%;
+    }
+    .question {
+        width: 80%;
+    }
+}
